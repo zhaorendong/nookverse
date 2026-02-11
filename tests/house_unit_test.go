@@ -6,6 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"nookverse/pkg/api/v1/dto"
+	"nookverse/tests/testutils"
 )
 
 // getValueOrDefault 获取指针值或默认值
@@ -70,10 +71,10 @@ func TestHouseDTOSerialization(t *testing.T) {
 	t.Run("CreateHouseRequest序列化", func(t *testing.T) {
 		req := dto.CreateHouseRequest{
 			Name:        "测试房屋",
-			Address:     stringPtr("测试地址"),
-			Description: stringPtr("测试描述"),
-			Area:        float64Ptr(120.5),
-			FloorCount:  intPtr(2),
+			Address:     testutils.StringPtr("测试地址"),
+			Description: testutils.StringPtr("测试描述"),
+			Area:        testutils.Float64Ptr(120.5),
+			FloorCount:  testutils.IntPtr(2),
 			Metadata: map[string]any{
 				"year_built": 2020,
 			},
@@ -92,9 +93,9 @@ func TestHouseDTOSerialization(t *testing.T) {
 		req := dto.CreateRoomRequest{
 			Name:        "测试房间",
 			RoomType:    "bedroom",
-			FloorNumber: intPtr(1),
-			Area:        float64Ptr(25.0),
-			Description: stringPtr("主卧室"),
+			FloorNumber: testutils.IntPtr(1),
+			Area:        testutils.Float64Ptr(25.0),
+			Description: testutils.StringPtr("主卧室"),
 			PositionData: map[string]any{
 				"x": 10,
 				"y": 20,
@@ -111,15 +112,4 @@ func TestHouseDTOSerialization(t *testing.T) {
 	})
 }
 
-// 辅助函数
-func stringPtr(s string) *string {
-	return &s
-}
 
-func intPtr(i int) *int {
-	return &i
-}
-
-func float64Ptr(f float64) *float64 {
-	return &f
-}

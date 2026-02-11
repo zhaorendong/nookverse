@@ -25,6 +25,21 @@ func isValidUUID(uuid string) bool {
 	return matched
 }
 
+// stringPtr 返回字符串指针
+func stringPtr(s string) *string {
+	return &s
+}
+
+// intPtr 返回整数指针
+func intPtr(i int) *int {
+	return &i
+}
+
+// float64Ptr 返回浮点数指针
+func float64Ptr(f float64) *float64 {
+	return &f
+}
+
 // ItemHandler 物品处理器
 type ItemHandler struct {
 	itemService services.ItemService

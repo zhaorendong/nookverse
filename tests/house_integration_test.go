@@ -18,6 +18,7 @@ import (
 	"nookverse/internal/routers"
 	"nookverse/internal/services"
 	"nookverse/pkg/api/v1/dto"
+	"nookverse/tests/testutils"
 )
 
 func TestHouseIntegration(t *testing.T) {
@@ -58,10 +59,10 @@ func TestHouseIntegration(t *testing.T) {
 	t.Run("创建房屋", func(t *testing.T) {
 		houseReq := dto.CreateHouseRequest{
 			Name:        "测试房屋",
-			Address:     stringPtr("测试地址123号"),
-			Description: stringPtr("这是一个测试房屋"),
-			Area:        float64Ptr(120.5),
-			FloorCount:  intPtr(2),
+			Address:     testutils.StringPtr("测试地址123号"),
+			Description: testutils.StringPtr("这是一个测试房屋"),
+			Area:        testutils.Float64Ptr(120.5),
+			FloorCount:  testutils.IntPtr(2),
 			Metadata: map[string]any{
 				"year_built": 2020,
 				"has_garden": true,
@@ -113,9 +114,9 @@ func TestHouseIntegration(t *testing.T) {
 		roomReq := dto.CreateRoomRequest{
 			Name:        "测试房间",
 			RoomType:    "bedroom",
-			FloorNumber: intPtr(1),
-			Area:        float64Ptr(25.0),
-			Description: stringPtr("主卧室"),
+			FloorNumber: testutils.IntPtr(1),
+			Area:        testutils.Float64Ptr(25.0),
+			Description: testutils.StringPtr("主卧室"),
 			PositionData: map[string]any{
 				"x": 10,
 				"y": 20,
@@ -175,8 +176,8 @@ func TestHouseIntegration(t *testing.T) {
 		require.NoError(t, err)
 
 		updateReq := dto.UpdateHouseRequest{
-			Name:        stringPtr("更新后的房屋名称"),
-			Description: stringPtr("更新后的描述"),
+			Name:        testutils.StringPtr("更新后的房屋名称"),
+			Description: testutils.StringPtr("更新后的描述"),
 		}
 
 		jsonData, _ := json.Marshal(updateReq)
@@ -284,18 +285,6 @@ func cleanupTestData(db *gorm.DB) {
 	db.Exec("DELETE FROM rooms")
 	db.Exec("DELETE FROM houses")
 	db.Exec("DELETE FROM categories WHERE is_system = false")
-}
-
-func stringPtr(s string) *string {
-	return &s
-}
-
-func intPtr(i int) *int {
-	return &i
-}
-
-func float64Ptr(f float64) *float64 {
-	return &f
 }
 
 func timePtr(t time.Time) *time.Time {
