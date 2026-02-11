@@ -1,0 +1,1058 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "NookVerse API",
+    "description": "NookVerse - 个人物品管理系统API文档",
+    "version": "1.0.0",
+    "contact": {
+      "name": "NookVerse Team",
+      "email": "support@nookverse.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "本地开发服务器"
+    }
+  ],
+  "paths": {
+    "/api/v1/houses": {
+      "post": {
+        "summary": "创建房屋",
+        "description": "创建一个新的房屋记录",
+        "tags": ["房屋管理"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateHouseRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "房屋创建成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "房屋创建成功"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/HouseResponse"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "get": {
+        "summary": "获取房屋列表",
+        "description": "分页获取房屋列表，支持多种过滤条件",
+        "tags": ["房屋管理"],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "description": "房屋名称模糊搜索",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "address",
+            "in": "query",
+            "description": "地址模糊搜索",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "min_area",
+            "in": "query",
+            "description": "最小面积",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "max_area",
+            "in": "query",
+            "description": "最大面积",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "min_floors",
+            "in": "query",
+            "description": "最小楼层数",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "max_floors",
+            "in": "query",
+            "description": "最大楼层数",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "每页数量",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          },
+          {
+            "name": "order_by",
+            "in": "query",
+            "description": "排序字段",
+            "schema": {
+              "type": "string",
+              "enum": ["created_at", "name", "area", "floor_count"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功获取房屋列表",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/HouseResponse"
+                      }
+                    },
+                    "pagination": {
+                      "$ref": "#/components/schemas/Pagination"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/v1/houses/search": {
+      "get": {
+        "summary": "搜索房屋",
+        "description": "根据关键词搜索房屋",
+        "tags": ["房屋管理"],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "description": "搜索关键词",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "min_area",
+            "in": "query",
+            "description": "最小面积",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "max_area",
+            "in": "query",
+            "description": "最大面积",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "每页数量",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "搜索成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/HouseResponse"
+                      }
+                    },
+                    "pagination": {
+                      "$ref": "#/components/schemas/Pagination"
+                    },
+                    "query": {
+                      "type": "string",
+                      "description": "搜索关键词"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/v1/houses/{houseId}": {
+      "get": {
+        "summary": "获取房屋详情",
+        "description": "根据ID获取房屋详细信息，包含房间信息",
+        "tags": ["房屋管理"],
+        "parameters": [
+          {
+            "name": "houseId",
+            "in": "path",
+            "required": true,
+            "description": "房屋ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功获取房屋详情",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/HouseResponse"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "put": {
+        "summary": "更新房屋",
+        "description": "更新房屋信息",
+        "tags": ["房屋管理"],
+        "parameters": [
+          {
+            "name": "houseId",
+            "in": "path",
+            "required": true,
+            "description": "房屋ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateHouseRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "房屋更新成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "房屋更新成功"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/HouseResponse"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "delete": {
+        "summary": "删除房屋",
+        "description": "删除房屋（只有当房屋内没有房间时才能删除）",
+        "tags": ["房屋管理"],
+        "parameters": [
+          {
+            "name": "houseId",
+            "in": "path",
+            "required": true,
+            "description": "房屋ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "房屋删除成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "房屋删除成功"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/v1/houses/{houseId}/rooms": {
+      "post": {
+        "summary": "创建房间",
+        "description": "在指定房屋内创建新房间",
+        "tags": ["房屋管理"],
+        "parameters": [
+          {
+            "name": "houseId",
+            "in": "path",
+            "required": true,
+            "description": "房屋ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRoomRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "房间创建成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "房间创建成功"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/RoomResponse"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "get": {
+        "summary": "获取房屋内房间",
+        "description": "获取指定房屋内的所有房间",
+        "tags": ["房屋管理"],
+        "parameters": [
+          {
+            "name": "houseId",
+            "in": "path",
+            "required": true,
+            "description": "房屋ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功获取房间列表",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/RoomResponse"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/v1/rooms/{roomId}": {
+      "get": {
+        "summary": "获取房间详情",
+        "description": "根据ID获取房间详细信息，包含物品信息",
+        "tags": ["房间管理"],
+        "parameters": [
+          {
+            "name": "roomId",
+            "in": "path",
+            "required": true,
+            "description": "房间ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功获取房间详情",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/RoomResponse"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "put": {
+        "summary": "更新房间",
+        "description": "更新房间信息",
+        "tags": ["房间管理"],
+        "parameters": [
+          {
+            "name": "roomId",
+            "in": "path",
+            "required": true,
+            "description": "房间ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRoomRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "房间更新成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "房间更新成功"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/RoomResponse"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "delete": {
+        "summary": "删除房间",
+        "description": "删除房间（只有当房间内没有物品时才能删除）",
+        "tags": ["房间管理"],
+        "parameters": [
+          {
+            "name": "roomId",
+            "in": "path",
+            "required": true,
+            "description": "房间ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "房间删除成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "房间删除成功"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/v1/houses/statistics": {
+      "get": {
+        "summary": "获取房屋统计信息",
+        "description": "获取房屋和房间的统计信息",
+        "tags": ["房屋管理"],
+        "responses": {
+          "200": {
+            "description": "成功获取统计信息",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/HouseStatisticsResponse"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CreateHouseRequest": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "房屋名称",
+            "example": "我的家"
+          },
+          "address": {
+            "type": "string",
+            "description": "房屋地址",
+            "example": "北京市朝阳区某某街道123号"
+          },
+          "description": {
+            "type": "string",
+            "description": "房屋描述",
+            "example": "这是一套温馨的三居室"
+          },
+          "area": {
+            "type": "number",
+            "description": "房屋面积（平方米）",
+            "example": 120.5
+          },
+          "floor_count": {
+            "type": "integer",
+            "description": "楼层数",
+            "example": 2,
+            "default": 1
+          },
+          "metadata": {
+            "type": "object",
+            "description": "扩展元数据",
+            "example": {
+              "year_built": 2020,
+              "has_garden": true,
+              "parking_spaces": 2
+            }
+          }
+        }
+      },
+      "UpdateHouseRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "房屋名称"
+          },
+          "address": {
+            "type": "string",
+            "description": "房屋地址"
+          },
+          "description": {
+            "type": "string",
+            "description": "房屋描述"
+          },
+          "area": {
+            "type": "number",
+            "description": "房屋面积（平方米）"
+          },
+          "floor_count": {
+            "type": "integer",
+            "description": "楼层数"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "扩展元数据"
+          }
+        }
+      },
+      "HouseResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "房屋唯一标识符"
+          },
+          "name": {
+            "type": "string",
+            "description": "房屋名称"
+          },
+          "address": {
+            "type": "string",
+            "description": "房屋地址"
+          },
+          "description": {
+            "type": "string",
+            "description": "房屋描述"
+          },
+          "area": {
+            "type": "number",
+            "description": "房屋面积（平方米）"
+          },
+          "floor_count": {
+            "type": "integer",
+            "description": "楼层数"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "扩展元数据"
+          },
+          "rooms": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RoomResponse"
+            },
+            "description": "房屋内的房间列表"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "创建时间"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "更新时间"
+          }
+        }
+      },
+      "CreateRoomRequest": {
+        "type": "object",
+        "required": ["name", "room_type"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "房间名称",
+            "example": "主卧室"
+          },
+          "room_type": {
+            "type": "string",
+            "description": "房间类型",
+            "enum": ["bedroom", "living_room", "kitchen", "bathroom", "study", "storage", "other"],
+            "example": "bedroom"
+          },
+          "floor_number": {
+            "type": "integer",
+            "description": "楼层号",
+            "example": 1,
+            "default": 1
+          },
+          "area": {
+            "type": "number",
+            "description": "房间面积（平方米）",
+            "example": 25.0
+          },
+          "description": {
+            "type": "string",
+            "description": "房间描述",
+            "example": "朝南的主卧室"
+          },
+          "position_data": {
+            "type": "object",
+            "description": "位置数据（3D坐标等）",
+            "example": {
+              "x": 10,
+              "y": 20,
+              "z": 0,
+              "width": 5,
+              "length": 4
+            }
+          }
+        }
+      },
+      "UpdateRoomRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "房间名称"
+          },
+          "room_type": {
+            "type": "string",
+            "description": "房间类型",
+            "enum": ["bedroom", "living_room", "kitchen", "bathroom", "study", "storage", "other"]
+          },
+          "floor_number": {
+            "type": "integer",
+            "description": "楼层号"
+          },
+          "area": {
+            "type": "number",
+            "description": "房间面积（平方米）"
+          },
+          "description": {
+            "type": "string",
+            "description": "房间描述"
+          },
+          "position_data": {
+            "type": "object",
+            "description": "位置数据"
+          }
+        }
+      },
+      "RoomResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "房间唯一标识符"
+          },
+          "house_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "所属房屋ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "房间名称"
+          },
+          "room_type": {
+            "type": "string",
+            "description": "房间类型"
+          },
+          "floor_number": {
+            "type": "integer",
+            "description": "楼层号"
+          },
+          "area": {
+            "type": "number",
+            "description": "房间面积（平方米）"
+          },
+          "description": {
+            "type": "string",
+            "description": "房间描述"
+          },
+          "position_data": {
+            "type": "object",
+            "description": "位置数据"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ItemResponse"
+            },
+            "description": "房间内的物品列表"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "创建时间"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "更新时间"
+          }
+        }
+      },
+      "HouseStatisticsResponse": {
+        "type": "object",
+        "properties": {
+          "total_houses": {
+            "type": "integer",
+            "description": "房屋总数"
+          },
+          "total_rooms": {
+            "type": "integer",
+            "description": "房间总数"
+          },
+          "average_area": {
+            "type": "number",
+            "description": "平均房屋面积"
+          },
+          "by_floor_count": {
+            "type": "object",
+            "description": "按楼层数统计",
+            "additionalProperties": {
+              "type": "integer"
+            }
+          },
+          "by_room_type": {
+            "type": "object",
+            "description": "按房间类型统计",
+            "additionalProperties": {
+              "type": "integer"
+            }
+          }
+        }
+      },
+      "ItemResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Pagination": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "integer",
+            "description": "总记录数"
+          },
+          "page": {
+            "type": "integer",
+            "description": "当前页码"
+          },
+          "page_size": {
+            "type": "integer",
+            "description": "每页记录数"
+          }
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "请求参数错误",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "请求参数验证失败"
+                }
+              }
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "资源不存在",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "资源不存在"
+                }
+              }
+            }
+          }
+        }
+      },
+      "InternalServerError": {
+        "description": "服务器内部错误",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "服务器内部错误"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "房屋管理",
+      "description": "房屋和房间管理相关接口"
+    },
+    {
+      "name": "房间管理",
+      "description": "房间独立操作接口"
+    }
+  ]
+}
