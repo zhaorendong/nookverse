@@ -321,14 +321,31 @@ code .env  # 或使用 vim .env
 }
 ```
 
+## 📚 文档资源
+
+### API文档
+- [API接口文档](docs/api/API_DOCUMENTATION.md) - 详细的API使用说明
+- [OpenAPI规范](docs/api/openapi.json) - 完整的OpenAPI 3.0文档
+- [房屋功能文档](docs/house/HOUSE_API_DOCUMENTATION.md) - 房屋管理API详细说明
+- [实现总结](docs/house/HOUSE_IMPLEMENTATION_SUMMARY.md) - House功能实现技术总结
+
+### 演示脚本
+- [Linux/Mac演示脚本](docs/scripts/house_demo.sh)
+- [Windows演示脚本](docs/scripts/house_demo.bat)
+
 ## 🧪 测试
 
+### 运行测试
 ```bash
 # 运行所有测试
 make test
 
-# 运行特定包测试
-go test ./internal/services/...
+# 运行特定测试
+go test ./tests/...
+
+# 运行房屋相关测试
+cd tests
+go test -v house_*_test.go
 
 # 生成测试覆盖率报告
 go test -coverprofile=coverage.out ./...
