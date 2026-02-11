@@ -1,4 +1,4 @@
-package main
+package tests
 
 import (
 	"bytes"
@@ -22,7 +22,7 @@ import (
 
 func TestHouseIntegration(t *testing.T) {
 	t.Skip("跳过需要数据库的集成测试")
-	
+
 	// 连接测试数据库
 	db, err := database.NewConnection(database.Config{
 		Host:     "localhost",
